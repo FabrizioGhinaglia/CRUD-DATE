@@ -5,6 +5,8 @@ const form = document.querySelector('form'),
 
 let userIdToEdit = null;
 
+const today = new Date().toISOString().split('T')[0];
+
 loadUsersFromStorage();
 
 printUsersOnTheTable();
@@ -45,7 +47,10 @@ function loadUsersFromStorage()
 
 function addUser()
 {
-    const user = {id: users.length + 1};
+    const user = {
+        id: users.length + 1,
+        timestamp: today
+    };
 
     for(let input of form.querySelectorAll('input'))
         user[ input.getAttribute('name') ] = input.value;
@@ -119,7 +124,8 @@ function addUserOnTheTable(user)
     let rowHtml = '';
 
     for( let attribute in user )
-        rowHtml += `<td attr-user-${user.id}-${attribute}>${user[attribute]}</td>`
+        if(attribute !== "timestamp")
+            rowHtml += `<td attr-user-${user.id}-${attribute}>${user[attribute]}</td>`
         
     rowHtml += actionsTd;
 
@@ -136,6 +142,11 @@ function addUserOnTheTable(user)
 function refreshUserCount()
 {
     table.querySelector('#usersCount').innerHTML = users.length;
+
+    // ...
+    table.querySelector('#usersRegisteredTodayCount').innerHTML = users.filter( 
+        user => user.timestamp === today
+    ).length;
 }
 
 function selectUserToEdit(id)
